@@ -20,7 +20,7 @@ export class HttpResponse {
 
   static created(
     res: Response,
-    data: Record<string, unknown> | Record<string, unknown>[],
+    data: any,
     message?: string
   ): Response {
     const response = new HttpResponseDto({
