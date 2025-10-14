@@ -1,8 +1,8 @@
 import { getAuth, UserRecord } from 'firebase-admin/auth';
 import { initializeApp, cert, App } from 'firebase-admin/app';
 import {LoginDto, LoginResponseDto } from '../dto/auth.dto';
-import { CreateUserDto, UserResponseDto } from '../dto/user.dto';
-import { firebaseConfig } from '../config/env.config';
+import { CreateUserDto, UserResponseDto } from '../../user/dto/user.dto';
+import { firebaseConfig } from '../../../core/config/env.config';
 
 
 export class FirebaseAuthService {

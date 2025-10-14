@@ -1,42 +1,45 @@
 import { Request, Response } from 'express';
 import { FirebaseAuthService } from '../services/firebase-auth.service';
-import { UserValidator } from '../validators/user.validator';
-import { HttpResponse } from '../helpers/http-response.helper';
+import { AuthValidator } from '../validators/auth.validator';
+import { HttpResponse } from '../../../core/helpers/http-response.helper';
 
-export class UserController {
+export class AuthController {
   private firebaseAuthService: FirebaseAuthService;
 
   constructor() {
     this.firebaseAuthService = FirebaseAuthService.getInstance();
   }
 
-  createUser = async (req: Request, res: Response): Promise<Response> => {
+  login = async (req: Request, res: Response): Promise<Response> => {
     try {
-      const validation = UserValidator.validateCreateUser(req.body);
+      const validation = AuthValidator.validateLogin(req.body);
       
       if (!validation.valid) {
         return HttpResponse.badRequest(res, validation.errors.join(', '));
       }
 
-      const { email, displayName } = req.body;
+      const { email } = req.body;
 
       const userExists = await this.firebaseAuthService.userExists(email);
       
-      if (userExists) {
+      if (!userExists) {
         return HttpResponse.badRequest(
           res,
-          'El usuario con este email ya existe'
+          'Usuario no encontrado'
         );
       }
 
-      // Crear usuario
-      const newUser = await this.firebaseAuthService.createUserWithoutPassword({
+      const loginResult = await this.firebaseAuthService.loginWithEmail({
         email,
       });
 
-      return HttpResponse.created(res, newUser, 'Usuario creado exitosamente');
+      return HttpResponse.success(
+        res, 
+        loginResult as unknown as Record<string, unknown>, 
+        'Login exitoso'
+      );
     } catch (error) {
-      console.error('Error al crear usuario:', error);
+      console.error('Error al hacer login:', error);
       
       const errorDetail = error instanceof Error 
         ? `${error.name}: ${error.message}` 
@@ -44,7 +47,7 @@ export class UserController {
 
       return HttpResponse.serverError(
         res, 
-        'Error al crear el usuario',
+        'Error al procesar el login',
         errorDetail
       );
     }

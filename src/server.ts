@@ -1,9 +1,9 @@
 import express from 'express';
 import * as http from 'node:http';
-import { envConfig } from './config/env.config';
-import userRouter from './routes/user.route';
-import authRouter from './routes/auth.route';
-import taskRouter from './routes/task.route';
+import { envConfig } from './core/config/env.config';
+import userRouter from './modules/user/routes/user.route';
+import authRouter from './modules/auth/routes/auth.route';
+import taskRouter from './modules/task/routes/task.route';
 
 class AppServer {
   private static _serverInstance: AppServer;

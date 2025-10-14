@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { FirebaseTaskService } from '../../services/firebase-task.service';
-import { TaskValidator } from '../../validators/task.validator';
-import { HttpResponse } from '../../helpers/http-response.helper';
+import { FirebaseTaskService } from '../services/firebase-task.service';
+import { TaskValidator } from '../validators/task.validator';
+import { HttpResponse } from '../../../core/helpers/http-response.helper';
 
 export class TaskController {
   private firebaseTaskService: FirebaseTaskService;

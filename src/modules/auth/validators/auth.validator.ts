@@ -1,4 +1,4 @@
-import { ValidationHelper } from '../helpers/validation.helper';
+import { ValidationHelper } from '../../../core/helpers/validation.helper';
 import { LoginDto } from '../dto/auth.dto';
 
 export class AuthValidator {
