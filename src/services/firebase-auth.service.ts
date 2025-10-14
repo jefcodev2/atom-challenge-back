@@ -1,5 +1,6 @@
 import { getAuth, UserRecord } from 'firebase-admin/auth';
 import { initializeApp, cert, App } from 'firebase-admin/app';
+import {LoginDto, LoginResponseDto } from '../dto/auth.dto';
 import { CreateUserDto, UserResponseDto } from '../dto/user.dto';
 import { firebaseConfig } from '../config/env.config';
 
@@ -66,7 +67,24 @@ export class FirebaseAuthService {
     return user !== null;
   }
 
+  async loginWithEmail(loginData: LoginDto): Promise<LoginResponseDto> {
+    try {
+      const email = loginData.email.trim().toLowerCase();
+      const userRecord = await this.auth.getUserByEmail(email);
 
+      // Generar un custom token para el usuario
+      const customToken = await this.auth.createCustomToken(userRecord.uid);
+
+      return {
+        uid: userRecord.uid,
+        email: userRecord.email || '',
+        customToken,
+      };
+    } catch (error) {
+      this.handleFirebaseError(error);
+      throw error;
+    }
+  }
 
   private mapUserRecordToDto(userRecord: UserRecord): UserResponseDto {
     return {
