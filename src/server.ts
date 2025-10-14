@@ -3,6 +3,7 @@ import * as http from 'node:http';
 import { envConfig } from './config/env.config';
 import userRouter from './routes/user.route';
 import authRouter from './routes/auth.route';
+import taskRouter from './routes/task.route';
 
 class AppServer {
   private static _serverInstance: AppServer;
@@ -49,6 +50,7 @@ class AppServer {
     if (this._express) {
       this._express.use('/api/users', userRouter);
       this._express.use('/api/auth', authRouter);
+      this._express.use('/api/tasks', taskRouter);
     }
   }
 
