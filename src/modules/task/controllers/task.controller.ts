@@ -12,6 +12,7 @@ export class TaskController {
 
   createTask = async (req: Request, res: Response): Promise<Response> => {
     try {
+      const authenticatedUser = (req as any).authenticatedUser;
       const validation = TaskValidator.validateCreateTask(req.body);
       
       if (!validation.valid) {

@@ -48,6 +48,36 @@ export class HttpResponse {
   }
 
 
+  static unauthorized(
+    res: Response,
+    message: string = 'No autorizado',
+    data?: Record<string, unknown> | Record<string, unknown>[]
+  ): Response {
+    const response = new HttpResponseDto({
+      status_code: 401,
+      data: data || {},
+      message: message,
+    });
+
+    return res.status(response.status_code).json(response.toJSON());
+  }
+
+
+  static forbidden(
+    res: Response,
+    message: string = 'Acceso prohibido',
+    data?: Record<string, unknown> | Record<string, unknown>[]
+  ): Response {
+    const response = new HttpResponseDto({
+      status_code: 403,
+      data: data || {},
+      message: message,
+    });
+
+    return res.status(response.status_code).json(response.toJSON());
+  }
+
+
   static serverError(
     res: Response,
     message: string = 'Error interno del servidor',
