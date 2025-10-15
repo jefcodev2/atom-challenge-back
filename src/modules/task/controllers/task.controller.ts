@@ -24,6 +24,7 @@ export class TaskController {
         description: req.body.description,
         status: "pending",
         is_active: true,
+        user_id: authenticatedUser?.uid,
       };
 
       const createdTask = await this.firebaseTaskService.createTask(taskData);
@@ -50,7 +51,8 @@ export class TaskController {
 
   getAllTasks = async (req: Request, res: Response): Promise<Response> => {
     try {
-      const tasks = await this.firebaseTaskService.getAllTasks();
+      const { userId } = req.query;
+      const tasks = await this.firebaseTaskService.getAllTasks(userId as string);
 
       return HttpResponse.success(
         res,

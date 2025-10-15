@@ -3,6 +3,7 @@ export interface CreateTaskDto {
   description: string;
   status: string;
   is_active: boolean;
+  user_id?: string;
 }
 
 export interface TaskResponseDto {
@@ -11,6 +12,7 @@ export interface TaskResponseDto {
   description: string;
   status: string;
   is_active: boolean;
+  user_id?: string;
   created_at: string;
   updated_at: string;
 }

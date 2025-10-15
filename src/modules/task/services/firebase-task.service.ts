@@ -29,6 +29,7 @@ export class FirebaseTaskService {
         description: taskData.description.trim(),
         status: taskData.status.toLowerCase(),
         is_active: taskData.is_active,
+        user_id: taskData.user_id,
         created_at: now,
         updated_at: now,
       };
@@ -60,6 +61,7 @@ export class FirebaseTaskService {
         description: taskData!.description,
         status: taskData!.status,
         is_active: taskData!.is_active,
+        user_id: taskData!.user_id,
         created_at: taskData!.created_at,
         updated_at: taskData!.updated_at,
       };
@@ -69,9 +71,34 @@ export class FirebaseTaskService {
     }
   }
 
-  async getAllTasks(): Promise<TaskResponseDto[]> {
+  async getAllTasks(userId?: string): Promise<TaskResponseDto[]> {
     try {
-      const tasksSnapshot = await this.db.collection(this.collectionName).get();
+      let query = this.db.collection(this.collectionName);
+      
+      // Si se proporciona userId, filtramos por ese usuario
+      if (userId) {
+        const tasksSnapshot = await query.where('user_id', '==', userId).get();
+        
+        const tasks: TaskResponseDto[] = [];
+        tasksSnapshot.forEach((doc) => {
+          const data = doc.data();
+          tasks.push({
+            id: doc.id,
+            title: data.title,
+            description: data.description,
+            status: data.status,
+            is_active: data.is_active,
+            user_id: data.user_id,
+            created_at: data.created_at,
+            updated_at: data.updated_at,
+          });
+        });
+        
+        return tasks;
+      }
+      
+      // Si no hay userId, devolvemos todas las tareas
+      const tasksSnapshot = await query.get();
       
       const tasks: TaskResponseDto[] = [];
       tasksSnapshot.forEach((doc) => {
@@ -82,6 +109,7 @@ export class FirebaseTaskService {
           description: data.description,
           status: data.status,
           is_active: data.is_active,
+          user_id: data.user_id,
           created_at: data.created_at,
           updated_at: data.updated_at,
         });
