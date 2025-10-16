@@ -147,5 +147,39 @@ export class TaskController {
       );
     }
   };
+
+  deleteTask = async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const { id } = req.params;
+
+      if (!id) {
+        return HttpResponse.badRequest(res, 'El ID de la tarea es requerido');
+      }
+
+      const deletedTask = await this.firebaseTaskService.deleteTask(id);
+
+      if (!deletedTask) {
+        return HttpResponse.badRequest(res, 'Tarea no encontrada');
+      }
+
+      return HttpResponse.success(
+        res,
+        deletedTask as unknown as Record<string, unknown>,
+        'Tarea eliminada exitosamente'
+      );
+    } catch (error) {
+      console.error('Error al eliminar la tarea:', error);
+      
+      const errorDetail = error instanceof Error 
+        ? `${error.name}: ${error.message}` 
+        : String(error);
+
+      return HttpResponse.serverError(
+        res,
+        'Error al eliminar la tarea',
+        errorDetail
+      );
+    }
+  };
 }
 

@@ -1,5 +1,6 @@
 import { getFirestore, Firestore, FieldValue } from 'firebase-admin/firestore';
 import { CreateTaskDto, UpdateTaskDto, TaskResponseDto } from '../dto/task.dto';
+import { TaskMapper } from '../mappers/task.mapper';
 
 export class FirebaseTaskService {
   private static instance: FirebaseTaskService;
@@ -55,16 +56,7 @@ export class FirebaseTaskService {
       }
 
       const taskData = taskDoc.data();
-      return {
-        id: taskDoc.id,
-        title: taskData!.title,
-        description: taskData!.description,
-        status: taskData!.status,
-        is_active: taskData!.is_active,
-        user_id: taskData!.user_id,
-        created_at: taskData!.created_at,
-        updated_at: taskData!.updated_at,
-      };
+      return TaskMapper.toDto(taskDoc.id, taskData!);
     } catch (error) {
       this.handleFirestoreError(error);
       throw error;
@@ -81,17 +73,7 @@ export class FirebaseTaskService {
         
         const tasks: TaskResponseDto[] = [];
         tasksSnapshot.forEach((doc) => {
-          const data = doc.data();
-          tasks.push({
-            id: doc.id,
-            title: data.title,
-            description: data.description,
-            status: data.status,
-            is_active: data.is_active,
-            user_id: data.user_id,
-            created_at: data.created_at,
-            updated_at: data.updated_at,
-          });
+          tasks.push(TaskMapper.toDto(doc.id, doc.data()));
         });
         
         return tasks;
@@ -102,17 +84,7 @@ export class FirebaseTaskService {
       
       const tasks: TaskResponseDto[] = [];
       tasksSnapshot.forEach((doc) => {
-        const data = doc.data();
-        tasks.push({
-          id: doc.id,
-          title: data.title,
-          description: data.description,
-          status: data.status,
-          is_active: data.is_active,
-          user_id: data.user_id,
-          created_at: data.created_at,
-          updated_at: data.updated_at,
-        });
+        tasks.push(TaskMapper.toDto(doc.id, doc.data()));
       });
 
       return tasks;
@@ -146,18 +118,29 @@ export class FirebaseTaskService {
       await taskRef.update(dataToUpdate);
 
       const updatedTaskDoc = await taskRef.get();
-      const updatedData = updatedTaskDoc.data();
+      return TaskMapper.toDto(updatedTaskDoc.id, updatedTaskDoc.data()!);
+    } catch (error) {
+      this.handleFirestoreError(error);
+      throw error;
+    }
+  }
 
-      return {
-        id: updatedTaskDoc.id,
-        title: updatedData!.title,
-        description: updatedData!.description,
-        status: updatedData!.status,
-        is_active: updatedData!.is_active,
-        user_id: updatedData!.user_id,
-        created_at: updatedData!.created_at,
-        updated_at: updatedData!.updated_at,
-      };
+  async deleteTask(taskId: string): Promise<TaskResponseDto | null> {
+    try {
+      const taskRef = this.db.collection(this.collectionName).doc(taskId);
+      const taskDoc = await taskRef.get();
+
+      if (!taskDoc.exists) {
+        return null;
+      }
+
+      await taskRef.update({
+        is_active: false,
+        updated_at: new Date().toISOString(),
+      });
+
+      const updatedTaskDoc = await taskRef.get();
+      return TaskMapper.toDto(updatedTaskDoc.id, updatedTaskDoc.data()!);
     } catch (error) {
       this.handleFirestoreError(error);
       throw error;
