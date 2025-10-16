@@ -1,4 +1,4 @@
-import { CreateTaskDto } from '../dto/task.dto';
+import { CreateTaskDto, UpdateTaskDto } from '../dto/task.dto';
 
 export class TaskValidator {
   static validateCreateTask(data: unknown): { valid: boolean; errors: string[] } {
@@ -23,6 +23,38 @@ export class TaskValidator {
       errors.push('La descripción no puede estar vacía');
     }
     
+    return {
+      valid: errors.length === 0,
+      errors,
+    };
+  }
+
+  static validateUpdateTask(data: unknown): { valid: boolean; errors: string[] } {
+    const errors: string[] = [];
+
+    if (!data || typeof data !== 'object') {
+      errors.push('Los datos de la tarea son requeridos');
+      return { valid: false, errors };
+    }
+
+    const taskData = data as Partial<UpdateTaskDto>;
+
+    if (!taskData.title && !taskData.description) {
+      errors.push('Debe proporcionar al menos un campo para actualizar (title o description)');
+    }
+
+    if (taskData.title !== undefined) {
+      if (taskData.title.trim().length === 0) {
+        errors.push('El título no puede estar vacío');
+      }
+    }
+
+    if (taskData.description !== undefined) {
+      if (taskData.description.trim().length === 0) {
+        errors.push('La descripción no puede estar vacía');
+      }
+    }
+
     return {
       valid: errors.length === 0,
       errors,

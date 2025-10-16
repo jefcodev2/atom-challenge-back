@@ -1,5 +1,5 @@
 import { getFirestore, Firestore, FieldValue } from 'firebase-admin/firestore';
-import { CreateTaskDto, TaskResponseDto } from '../dto/task.dto';
+import { CreateTaskDto, UpdateTaskDto, TaskResponseDto } from '../dto/task.dto';
 
 export class FirebaseTaskService {
   private static instance: FirebaseTaskService;
@@ -116,6 +116,48 @@ export class FirebaseTaskService {
       });
 
       return tasks;
+    } catch (error) {
+      this.handleFirestoreError(error);
+      throw error;
+    }
+  }
+
+  async updateTask(taskId: string, taskData: UpdateTaskDto): Promise<TaskResponseDto | null> {
+    try {
+      const taskRef = this.db.collection(this.collectionName).doc(taskId);
+      const taskDoc = await taskRef.get();
+
+      if (!taskDoc.exists) {
+        return null;
+      }
+
+      const dataToUpdate: Record<string, any> = {
+        updated_at: new Date().toISOString(),
+      };
+
+      if (taskData.title !== undefined) {
+        dataToUpdate.title = taskData.title.trim();
+      }
+
+      if (taskData.description !== undefined) {
+        dataToUpdate.description = taskData.description.trim();
+      }
+
+      await taskRef.update(dataToUpdate);
+
+      const updatedTaskDoc = await taskRef.get();
+      const updatedData = updatedTaskDoc.data();
+
+      return {
+        id: updatedTaskDoc.id,
+        title: updatedData!.title,
+        description: updatedData!.description,
+        status: updatedData!.status,
+        is_active: updatedData!.is_active,
+        user_id: updatedData!.user_id,
+        created_at: updatedData!.created_at,
+        updated_at: updatedData!.updated_at,
+      };
     } catch (error) {
       this.handleFirestoreError(error);
       throw error;

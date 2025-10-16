@@ -6,6 +6,11 @@ export interface CreateTaskDto {
   user_id?: string;
 }
 
+export interface UpdateTaskDto {
+  title?: string;
+  description?: string;
+}
+
 export interface TaskResponseDto {
   id: string;
   title: string;

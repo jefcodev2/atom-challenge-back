@@ -107,5 +107,45 @@ export class TaskController {
       );
     }
   };
+
+  updateTask = async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const { id } = req.params;
+
+      if (!id) {
+        return HttpResponse.badRequest(res, 'El ID de la tarea es requerido');
+      }
+
+      const validation = TaskValidator.validateUpdateTask(req.body);
+      
+      if (!validation.valid) {
+        return HttpResponse.badRequest(res, validation.errors.join(', '));
+      }
+
+      const updatedTask = await this.firebaseTaskService.updateTask(id, req.body);
+
+      if (!updatedTask) {
+        return HttpResponse.badRequest(res, 'Tarea no encontrada');
+      }
+
+      return HttpResponse.success(
+        res,
+        updatedTask as unknown as Record<string, unknown>,
+        'Tarea actualizada exitosamente'
+      );
+    } catch (error) {
+      console.error('Error al actualizar la tarea:', error);
+      
+      const errorDetail = error instanceof Error 
+        ? `${error.name}: ${error.message}` 
+        : String(error);
+
+      return HttpResponse.serverError(
+        res,
+        'Error al actualizar la tarea',
+        errorDetail
+      );
+    }
+  };
 }
 
