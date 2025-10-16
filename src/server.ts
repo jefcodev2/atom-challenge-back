@@ -1,5 +1,6 @@
 import express from 'express';
 import * as http from 'node:http';
+import cors from 'cors';
 import { envConfig } from './core/config/env.config';
 import userRouter from './modules/user/routes/user.route';
 import authRouter from './modules/auth/routes/auth.route';
@@ -33,6 +34,8 @@ class AppServer {
     }
 
     this._express = express();
+
+    this._express.use(cors());
 
     this._express.use(express.json());
     this._express.use(express.urlencoded({ extended: false }));
