@@ -6,5 +6,6 @@ export interface UserResponseDto {
   uid: string;
   email: string;
   createdAt: string;
+  customToken?: string;
 }
 

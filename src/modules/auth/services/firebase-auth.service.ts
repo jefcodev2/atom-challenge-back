@@ -41,7 +41,12 @@ export class FirebaseAuthService {
         disabled: false,
       });
 
-      return this.mapUserRecordToDto(userRecord);
+      const customToken = await this.auth.createCustomToken(userRecord.uid);
+
+      return {
+        ...this.mapUserRecordToDto(userRecord),
+        customToken,
+      };
     } catch (error) {
       this.handleFirebaseError(error);
       throw error; 
