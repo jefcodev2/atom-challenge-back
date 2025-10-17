@@ -181,5 +181,39 @@ export class TaskController {
       );
     }
   };
+
+  completeTask = async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const { id } = req.params;
+
+      if (!id) {
+        return HttpResponse.badRequest(res, 'El ID de la tarea es requerido');
+      }
+
+      const completedTask = await this.firebaseTaskService.completeTask(id);
+
+      if (!completedTask) {
+        return HttpResponse.badRequest(res, 'Tarea no encontrada');
+      }
+
+      return HttpResponse.success(
+        res,
+        completedTask as unknown as Record<string, unknown>,
+        'Tarea completada exitosamente'
+      );
+    } catch (error) {
+      console.error('Error al completar la tarea:', error);
+      
+      const errorDetail = error instanceof Error 
+        ? `${error.name}: ${error.message}` 
+        : String(error);
+
+      return HttpResponse.serverError(
+        res,
+        'Error al completar la tarea',
+        errorDetail
+      );
+    }
+  };
 }
 

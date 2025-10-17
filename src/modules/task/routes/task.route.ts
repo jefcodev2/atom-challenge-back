@@ -15,6 +15,8 @@ router.get('/:id', taskController.getTaskById);
 
 router.put('/:id', taskController.updateTask);
 
+router.patch('/:id/complete', taskController.completeTask);
+
 router.delete('/:id', taskController.deleteTask);
 
 export default router;

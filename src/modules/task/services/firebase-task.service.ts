@@ -147,6 +147,28 @@ export class FirebaseTaskService {
     }
   }
 
+  async completeTask(taskId: string): Promise<TaskResponseDto | null> {
+    try {
+      const taskRef = this.db.collection(this.collectionName).doc(taskId);
+      const taskDoc = await taskRef.get();
+
+      if (!taskDoc.exists) {
+        return null;
+      }
+
+      await taskRef.update({
+        status: 'completed',
+        updated_at: new Date().toISOString(),
+      });
+
+      const updatedTaskDoc = await taskRef.get();
+      return TaskMapper.toDto(updatedTaskDoc.id, updatedTaskDoc.data()!);
+    } catch (error) {
+      this.handleFirestoreError(error);
+      throw error;
+    }
+  }
+
   private handleFirestoreError(error: unknown): never {
     const firestoreError = error as { code?: string; message?: string };
     
