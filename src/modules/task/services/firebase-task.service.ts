@@ -138,7 +138,7 @@ export class FirebaseTaskService {
     }
   }
 
-  async completeTask(taskId: string): Promise<TaskResponseDto | null> {
+  async toggleTaskStatus(taskId: string): Promise<TaskResponseDto | null> {
     try {
       const taskRef = this.db.collection(this.collectionName).doc(taskId);
       const taskDoc = await taskRef.get();
@@ -147,8 +147,13 @@ export class FirebaseTaskService {
         return null;
       }
 
+      const currentData = taskDoc.data();
+      const currentStatus = currentData!.status;
+
+      const newStatus = currentStatus === 'pending' ? 'completed' : 'pending';
+
       await taskRef.update({
-        status: 'completed',
+        status: newStatus,
         updated_at: new Date().toISOString(),
       });
 

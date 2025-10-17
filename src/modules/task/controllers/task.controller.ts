@@ -182,7 +182,7 @@ export class TaskController {
     }
   };
 
-  completeTask = async (req: Request, res: Response): Promise<Response> => {
+  toggleTaskStatus = async (req: Request, res: Response): Promise<Response> => {
     try {
       const { id } = req.params;
 
@@ -190,19 +190,23 @@ export class TaskController {
         return HttpResponse.badRequest(res, 'El ID de la tarea es requerido');
       }
 
-      const completedTask = await this.firebaseTaskService.completeTask(id);
+      const updatedTask = await this.firebaseTaskService.toggleTaskStatus(id);
 
-      if (!completedTask) {
+      if (!updatedTask) {
         return HttpResponse.badRequest(res, 'Tarea no encontrada');
       }
 
+      const statusMessage = updatedTask.status === 'completed' 
+        ? 'Tarea marcada como completada' 
+        : 'Tarea marcada como pendiente';
+
       return HttpResponse.success(
         res,
-        completedTask as unknown as Record<string, unknown>,
-        'Tarea completada exitosamente'
+        updatedTask as unknown as Record<string, unknown>,
+        statusMessage
       );
     } catch (error) {
-      console.error('Error al completar la tarea:', error);
+      console.error('Error al actualizar el estado de la tarea:', error);
       
       const errorDetail = error instanceof Error 
         ? `${error.name}: ${error.message}` 
@@ -210,7 +214,7 @@ export class TaskController {
 
       return HttpResponse.serverError(
         res,
-        'Error al completar la tarea',
+        'Error al actualizar el estado de la tarea',
         errorDetail
       );
     }
