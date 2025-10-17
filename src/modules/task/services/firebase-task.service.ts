@@ -78,6 +78,12 @@ export class FirebaseTaskService {
         tasks.push(TaskMapper.toDto(doc.id, doc.data()));
       });
 
+      tasks.sort((a, b) => {
+        const dateA = new Date(a.created_at).getTime();
+        const dateB = new Date(b.created_at).getTime();
+        return dateB - dateA; 
+      });
+
       return tasks;
     } catch (error) {
       this.handleFirestoreError(error);
