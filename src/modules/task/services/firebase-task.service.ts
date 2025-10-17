@@ -65,21 +65,12 @@ export class FirebaseTaskService {
 
   async getAllTasks(userId?: string): Promise<TaskResponseDto[]> {
     try {
-      let query = this.db.collection(this.collectionName);
+      let query = this.db.collection(this.collectionName).where('is_active', '==', true);
       
-      // Si se proporciona userId, filtramos por ese usuario
       if (userId) {
-        const tasksSnapshot = await query.where('user_id', '==', userId).get();
-        
-        const tasks: TaskResponseDto[] = [];
-        tasksSnapshot.forEach((doc) => {
-          tasks.push(TaskMapper.toDto(doc.id, doc.data()));
-        });
-        
-        return tasks;
+        query = query.where('user_id', '==', userId);
       }
       
-      // Si no hay userId, devolvemos todas las tareas
       const tasksSnapshot = await query.get();
       
       const tasks: TaskResponseDto[] = [];
