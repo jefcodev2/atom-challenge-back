@@ -28,9 +28,13 @@ class AppServer {
     return this._port;
   }
 
+  public get app(): express.Application | undefined {
+    return this._express;
+  }
+
   public initializeServer(): AppServer {
     if (this._express !== undefined) {
-      throw new Error('El servidor ya está inicializado.');
+      return this;
     }
 
     this._express = express();
@@ -42,9 +46,11 @@ class AppServer {
 
     this.initHttpRoutes();
 
-    this._server = this._express.listen(this._port, () => {
-      console.log(`Servidor escuchando en puerto ${this._port}...`);
-    });
+    if (process.env.NODE_ENV !== 'production') {
+      this._server = this._express.listen(this._port, () => {
+        console.log(`Servidor escuchando en puerto ${this._port}...`);
+      });
+    }
 
     return this;
   }
