@@ -4,7 +4,7 @@
   "main": "app.ts",
   "scripts": {
     "start": "ts-node index.ts",
-    "build": "tsc",
+    "build": "echo 'Build handled by Vercel'",
     "start:dev": "nodemon index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
