@@ -17,14 +17,14 @@
     "express": "^5.1.0",
     "firebase": "^12.4.0",
     "firebase-admin": "^13.5.0",
+    "typescript": "^5.7.3",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.0",
+    "@types/node": "^24.7.2"
+  },
+  "devDependencies": {
     "nodemon": "^3.1.10",
-    "typescript": "^5.7.3"
-},
-"devDependencies": {
-  "@types/cors": "^2.8.19",
-  "@types/express": "^5.0.0",
-  "@types/node": "^24.7.2",
-  "ts-node": "^10.9.2"
-}
+    "ts-node": "^10.9.2"
+  }
 
 }
